@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Main Workflow
+
+on:
+  workflow_call:
+    inputs:
+      coverage-results:
+        required: false
+        type: string
+        default: code-coverage-report-ubuntu-latest
+      coverage-path:
+        required: false
+        type: string
+        default: bin
+    secrets:
+      - SONAR_TOKEN
+
+jobs:
+  sonarCloudTrigger:
+    name: SonarCloud Trigger
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.coverage-results }}
+          path: ${{ inputs.coverage-path }}
+      - uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
