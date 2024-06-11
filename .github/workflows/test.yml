@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Test
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        required: false
+        type: string
+        default: ubuntu-latest
+      go-version:
+        required: false
+        type: string
+        default: stable
+
+jobs:
+  test:
+    name: Build and Test
+    runs-on: ${{ inputs.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v4
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ inputs.go-version }}
+
+      - name: Build
+        run: task build
+
+      - name: Test
+        run: task test
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report-${{ inputs.os }}
+          path: bin
+
+      - name: Upload code coverage results to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          file: ./bin/coverage.out
+          flags: ${{ runner.os }}
