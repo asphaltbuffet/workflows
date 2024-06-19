@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-
+---
 name: "CodeQL"
 
 on:
@@ -23,3 +23,6 @@ jobs:
         go-version: 'stable'
     - uses: github/codeql-action/init@v3
     - uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:go"
+      
