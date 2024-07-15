@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: super-linter/super-linter/slim@v6.6.0  # x-release-please-version
+      - uses: super-linter/super-linter/slim@v6.7.0  # x-release-please-version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # To report GitHub Actions status checks
           VALIDATE_GO: false
